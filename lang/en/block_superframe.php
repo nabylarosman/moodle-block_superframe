@@ -32,10 +32,28 @@
 
 // General
 $string['pluginname'] = 'Super frame';
-$string['welcomeuser'] = 'Welcome {$a->firstname} {$a->lastname}';
-$string['message'] = 'I am a Moodle developer';
+$string['welcomeuser'] = 'Welcome {$a->firstname} {$a->lastname}<br/>';
+$string['guest'] = 'Welcome Guest<br/>';
+$string['message'] = 'I am a great developer';
+$string['viewlink'] = 'View Page';
+$string['headerconfig'] = 'settings';
 $string['url'] = 'iFrame URL';
+$string['width'] = 'Width';
+$string['height'] = 'Height';
+$string['page_layout'] = 'Page Layout';
+$string['url'] = 'url';
+$string['url_details'] = 'URL to display';
+$string['width_details'] = 'Width of the frame (px)';
+$string['height_details'] = 'Height of the frame (px)';
+$string['page_layout_details'] = 'Select a preferred page layout';
 
 // Capability strings
 $string['superframe:addinstance'] = 'Add a new Super frame block';
 $string['superframe:myaddinstance'] = 'Add a new Super frame block to my moodle';
+
+// Edit form strings.
+$string['size'] = 'Select a size for your iframe';
+$string['custom'] = 'Custom';
+$string['small'] = 'Small';
+$string['medium'] = 'Medium';
+$string['large'] = 'Large';

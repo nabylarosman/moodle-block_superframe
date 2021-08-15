@@ -32,15 +32,12 @@
 defined('MOODLE_INTERNAL') || die();
 
 /*
-
 Notice some rules that will keep plugin approvers happy when you want
 to register your plugin in the plugins database
-
     Use 4 spaces to indent, no tabs
     Use 8 spaces for continuation lines
     Make sure every class has php doc to describe it
     Describe the parameters of each class and function
-
     https://docs.moodle.org/dev/Coding_style
 */
 
@@ -49,12 +46,22 @@ to register your plugin in the plugins database
  *
  */
 
+
+/**
+ * Allow block configuration.
+ */
+
+
 class block_superframe extends block_base {
     /**
      * Initialize our block with a language string.
      */
     function init() {
         $this->title = get_string('pluginname', 'block_superframe');
+    }
+
+    function has_config() {
+        return true;
     }
 
     /**
@@ -76,12 +83,24 @@ class block_superframe extends block_base {
         // OK let's add some content.
         $this->content = new stdClass();
         $this->content->footer = '';
-	$this->content->text = get_string('welcomeuser', 'block_superframe',
-                $USER);
-	$this->content->text .= '<br>'.get_string('message', 'block_superframe');
 
-	$this->content->text .= '<br><a href="' . $CFG->wwwroot . '/blocks/superframe/view.php">' .
-                get_string('viewlink', 'block_superframe') . '</a>';
+
+        if($USER->id != 0)
+        {
+            $this->content->text = get_string('welcomeuser', 'block_superframe',
+                $USER);
+        }
+        else{
+            $this->content->text = get_string('guest', 'block_superframe');
+        }
+
+
+        $this->content->text .= get_string('message', 'block_superframe');
+
+        $$url = new moodle_url('/blocks/superframe/view.php', ['blockid' => $blockid]);
+$this->content->text .= html_writer::tag('p', html_writer::link($url, get_string('viewlink', 'block_superframe')));
+
+
         return $this->content;
     }
     /**
@@ -101,12 +120,5 @@ class block_superframe extends block_base {
     function instance_allow_multiple() {
         return true;
     }
-/**
-     * Allow block configuration.
-     */
-    function has_config() {
-        return true;
-    }
-}
 
- 
+}
