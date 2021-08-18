@@ -46,12 +46,6 @@ to register your plugin in the plugins database
  *
  */
 
-
-/**
- * Allow block configuration.
- */
-
-
 class block_superframe extends block_base {
     /**
      * Initialize our block with a language string.
@@ -60,15 +54,11 @@ class block_superframe extends block_base {
         $this->title = get_string('pluginname', 'block_superframe');
     }
 
-    function has_config() {
-        return true;
-    }
-
     /**
      * Add some text content to our block.
      */
     function get_content() {
-        global $USER, $CFG;
+        global $CFG, $USER;
 
         // Do we have any content?
         if ($this->content !== null) {
@@ -84,36 +74,34 @@ class block_superframe extends block_base {
         $this->content = new stdClass();
         $this->content->footer = '';
 
+        $this->content->text = get_string('welcomeuser', 'block_superframe', $USER);
 
-        if($USER->id != 0)
-        {
-            $this->content->text = get_string('welcomeuser', 'block_superframe',
-                $USER);
+        // Add the block id to the Moodle URL for the view page.
+        $blockid = $this->instance->id;
+        $context = context_block::instance($blockid);
+        // Check the capability.
+        if (has_capability('block/superframe:seeviewpagelink', $context)) {
+            $url = new moodle_url('/blocks/superframe/view.php', ['blockid' => $blockid]);
+            $this->content->text .= html_writer::tag('p', html_writer::link($url, get_string('viewlink', 'block_superframe')));
         }
-        else{
-            $this->content->text = get_string('guest', 'block_superframe');
-        }
-
-
-        $this->content->text .= get_string('message', 'block_superframe');
-
-        $$url = new moodle_url('/blocks/superframe/view.php', ['blockid' => $blockid]);
-$this->content->text .= html_writer::tag('p', html_writer::link($url, get_string('viewlink', 'block_superframe')));
-
 
         return $this->content;
     }
+
     /**
      * This is a list of places where the block may or
      * may not be added.
      */
     public function applicable_formats() {
-        return array('all' => false,
-                     'site' => true,
-                     'site-index' => true,
-                     'course-view' => true,
-                     'my' => true);
+        return array(
+            'all' => false,
+            'site' => true,
+            'site-index' => true,
+            'course-view' => true,
+            'my' => true
+        );
     }
+
     /**
      * Allow multiple instances of the block.
      */
@@ -121,4 +109,10 @@ $this->content->text .= html_writer::tag('p', html_writer::link($url, get_string
         return true;
     }
 
+    /**
+     * Allow block configuration.
+     */
+    function has_config() {
+        return true;
+    }
 }

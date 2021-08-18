@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+// along with Moodle.  If not, see <http://www.gnu.org/licenses/>;.
 /**
  * superframe view page
  *
@@ -32,16 +32,27 @@ $PAGE->set_title(get_string('pluginname', 'block_superframe'));
 $PAGE->navbar->add(get_string('pluginname', 'block_superframe'));
 require_login();
 
-// Start output to browser.
-echo $OUTPUT->header();
-echo $OUTPUT->heading(get_string('pluginname', 'block_superframe'), 5);
-// Dummy content.
+// Check the users permissions to see the view page.
+$context = context_course::instance($COURSE->id);
+require_capability('block/superframe:seeviewpage', $context);
 
-echo $OUTPUT->user_picture($USER, array('popup'=>true));
-echo  fullname($USER) . '<br><br>';
+/* Get the instance configuration data from the database.
+   It's stored as a base 64 encoded serialized string. */
+$configdata = $DB->get_field('block_instances', 'configdata', ['id' => $blockid]);
+
+// If an entry exists, convert to an object.
+if ($configdata) {
+    $config = unserialize(base64_decode($configdata));
+} else {
+    // No instance data, use admin settings.
+    // However, that only specifies height and width, not size.
+   $config = $def_config;
+   $config->size = 'custom';
+}
 
 // URL - comes either from instance or admin.
 $url = $config->url;
+
 // Let's set up the iframe attributes.
 switch ($config->size) {
     case 'custom':
@@ -61,21 +72,6 @@ switch ($config->size) {
         $height = 720;
         break;
 }
-// Build and display an iframe.
-//$url = 'https://quizlet.com/132695231/scatter/embed';
-//$width = '600px';
-//$height = '400px';
-$attributes = ['src' => $url,
-    'width' => $width,
-    'height' => $height];
 
-
-$attributes = ['src' => $config->url,
-    'width' => $config->width,
-    'height' => $config->height];
-
-echo html_writer::start_tag('iframe', $attributes);
-echo html_writer::end_tag('iframe');
-
-//send footer out to browser
-echo $OUTPUT->footer();
+$renderer = $PAGE->get_renderer('block_superframe');
+$renderer->display_view_page($url, $width, $height);
